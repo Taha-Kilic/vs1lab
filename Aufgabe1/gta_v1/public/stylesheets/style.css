@@ -111,12 +111,9 @@ a {
 
 /* ... your code here ... */
 header{
-  grid-column: 1 / -1; 
-    width: 100%;
-    /* Optional: Basic visual styling */
-    padding: 10px;
-    border: 1px solid #696868;
-    margin-bottom: 10px;
+  
+    display: flex;
+    justify-content: space-between;
 }
 
 /* ### TODO ### Styles for Main Component */
@@ -124,9 +121,9 @@ header{
 /* ... your code here ... */
 
 main{
-  display: grid;
-  grid-template-columns: repeat(12, 1fr); 
-    gap: 10px;
+  display: flex;
+  flex-direction: horizontal;
+  justify-content: center;
 }
 
 
@@ -134,7 +131,8 @@ main{
 
 /* ... your code here ... */
 tagging{
-
+  display: flex;
+  flex-direction: vertical;
 }
 
 /* ### TODO ### Styles for Discovery component */
@@ -142,18 +140,14 @@ tagging{
 /* ... your code here ... */
 
 discovery{
-
+  display: flex;
+  flex-direction: vertical;
 }
 /* ### TODO ### Styles for Footer Component */
 
 /* ... your code here ... */
 footer{
-  grid-column: 1 / -1; 
-    width: 100%;
-    /* Optional: Basic visual styling */
-    padding: 10px;
-    border: 1px solid #696868;
-    margin-bottom: 10px;
+    display: flex;
 }
 
 /* ### TODO ### Media Queries */
