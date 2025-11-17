@@ -112,8 +112,23 @@ a {
 /* ... your code here ... */
 header{
   
+
+
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    flex-direction: row;
+    
+    
+    .header__image{
+      width: 40px;
+      height: auto;
+    }
+
+    padding-top: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #333;
+    background-color: #e9e7e7;
+    
 }
 
 /* ### TODO ### Styles for Main Component */
@@ -122,8 +137,13 @@ header{
 
 main{
   display: flex;
-  flex-direction: horizontal;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  margin: auto;
+  
 }
 
 
@@ -133,6 +153,8 @@ main{
 tagging{
   display: flex;
   flex-direction: vertical;
+  
+  
 }
 
 /* ### TODO ### Styles for Discovery component */
@@ -141,13 +163,32 @@ tagging{
 
 discovery{
   display: flex;
-  flex-direction: vertical;
+  flex-direction: column;
+  
 }
+
+discovery__wrapper{
+  display: flex;
+  flex-direction: row;
+  
+
+}
+
 /* ### TODO ### Styles for Footer Component */
 
 /* ... your code here ... */
 footer{
     display: flex;
+    flex-direction: horizontal;
+    justify-content: flex-start;
+    align-items: flex-end;
+    align-content: space-between;
+    padding-bottom: 40px;
+    padding-left: 20px;
+    border-top: 1px solid #333;
+    padding-top: 40px;
+    background-color: #e9e7e7;
+    
 }
 
 /* ### TODO ### Media Queries */
