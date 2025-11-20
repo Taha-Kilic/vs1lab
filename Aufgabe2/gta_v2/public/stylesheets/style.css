@@ -307,5 +307,9 @@ a {
   margin-top: 2rem;
 
 }
+
+#map { 
+   height: 500px;
+ }
 }
 
