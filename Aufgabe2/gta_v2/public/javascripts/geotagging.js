@@ -121,14 +121,15 @@ class MapManager {
 function updateLocation() {
    
     
-    var latitude = LocationHelper.findLocation(LocationHelper.latitude)
-    var longitude = LocationHelper.findLocation(LocationHelper.longitude)
+    LocationHelper.findLocation((locationHelper) => {
+    
+        document.getElementById("tagLat").value = locationHelper.latitude
+        document.getElementById("tagLong").value = locationHelper.longitude
 
-    document.getElementById("tagLat").value = latitude
-    document.getElementById("tagLong").value = longitude
-
-    document.getElementById("tagLatHidden").value = latitude
-    document.getElementById("tagLongHidden").value = longitude
+        document.getElementById("tagLatHidden").value = locationHelper.latitude
+        document.getElementById("tagLongHidden").value = locationHelper.longitude
+        
+    });
  
 }
 
