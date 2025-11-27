@@ -118,7 +118,24 @@ class MapManager {
  */
 // ... your code here ...
 
+function updateLocation() {
+   
+    
+    LocationHelper.findLocation((locationHelper) => {
+    
+        document.getElementById("tagLat").value = locationHelper.latitude
+        document.getElementById("tagLong").value = locationHelper.longitude
+
+        document.getElementById("tagLatHidden").value = locationHelper.latitude
+        document.getElementById("tagLongHidden").value = locationHelper.longitude
+        
+    });
+ 
+}
+
+
+
 // Wait for the page to fully load its DOM content, then call updateLocation
 document.addEventListener("DOMContentLoaded", () => {
-    alert("Please change the script 'geotagging.js'");
+    updateLocation();
 });
