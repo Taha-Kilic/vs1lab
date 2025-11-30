@@ -90,7 +90,6 @@ class MapManager {
             attribution: '&copy; ' + mapLink + ' Contributors'}).addTo(this.#map);
         this.#markers = L.layerGroup().addTo(this.#map);
     }
-
     /**
     * Update the Markers of a Leaflet map
     * @param {number} latitude The map center latitude
@@ -128,8 +127,24 @@ function updateLocation() {
 
         document.getElementById("tagLatHidden").value = locationHelper.latitude
         document.getElementById("tagLongHidden").value = locationHelper.longitude
+
+        // Initialize the map
         
+        const mapManager = new MapManager();
+        mapManager.initMap(locationHelper.latitude, locationHelper.longitude);
+        mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude);
+
+        
+
+        const placeholderImg = document.getElementById("bild");
+        if (placeholderImg) placeholderImg.remove();
+
+        const mapSpan = document.querySelector("#map p");
+        if (mapSpan) mapSpan.remove();
+
+        document.getElementById("map").style.height = "500px";
     });
+    
  
 }
 
