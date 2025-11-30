@@ -129,7 +129,7 @@ function updateLocation() {
         document.getElementById("tagLongHidden").value = locationHelper.longitude
 
         // Initialize the map
-        /*
+        
         const mapManager = new MapManager();
         mapManager.initMap(locationHelper.latitude, locationHelper.longitude);
         mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude);
@@ -142,7 +142,7 @@ function updateLocation() {
         const mapSpan = document.querySelector("#map p");
         if (mapSpan) mapSpan.remove();
 
-        */
+        document.getElementById("map").style.height = "500px";
     });
     
  
