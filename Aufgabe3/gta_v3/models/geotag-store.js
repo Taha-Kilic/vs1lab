@@ -27,6 +27,24 @@ class InMemoryGeoTagStore{
 
     // TODO: ... your code here ...
 
+    #geoTagMultiSet = []
+
+    constructor() {}
+
+    get geoTagMultiSet() {
+        return this.#geoTagMultiSet
+    }
+
+    addGeoTag(geotag) {
+        this.#geoTagMultiSet.push(geotag);
+    }
+
+    removeGeoTag(removeGeotag) {
+        this.#geoTagMultiSet = this.#geoTagMultiSet.filter(
+            tag => tag.name !== removeGeotag.name
+        );
+    }
+
 }
 
 module.exports = InMemoryGeoTagStore
