@@ -43,6 +43,15 @@ class InMemoryGeoTagStore{
         this.#geoTagMultiSet = this.#geoTagMultiSet.filter(
             tag => tag.name !== removeGeotag.name
         );
+        
+    }
+
+    getNeaerbyGeoTags(geotag) {
+
+    }
+
+    searchNearbyGeoTags(geotag) {
+
     }
 
 }
