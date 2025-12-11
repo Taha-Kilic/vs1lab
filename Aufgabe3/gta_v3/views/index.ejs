@@ -3,6 +3,10 @@
 
 <!-- File origin: VS1LAB A1a -->
 
+<!DOCTYPE html>
+
+<!-- File origin: VS1LAB A1a -->
+
 <html lang="en">
 
 <head>
@@ -78,18 +82,18 @@
             </form>
             <!-- ############### VS1Lab 1a Form 2 End -->
 
-            <div class="discovery__wrapper">
+            <div class="discovery__wrapper row">
                 <div class="discovery__taglist">
                     <ul class="discovery__results" id="discoveryResults">
                         <% if (taglist !== undefined) taglist.forEach(function(gtag) { %>
-                            <li><%= gtag.name %> ( <%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> </li>
-                        <% }); %>
+        <li><%= gtag.name %> ( <%= gtag.latitude %>,<%= gtag.longitude %>) <%= gtag.hashtag %> </li>
+    <% }); %>
                     </ul>
                 </div>
 
-                <div id="map" class="discovery__map">
-                    <img src="./images/mapview.jpg" alt="a map with locations" id="mapView" />
-                    <span>Result map</span>
+                <div id="map" class="discovery__map col-8">
+                    <img src="./images/mapview.jpg" alt="a map with locations" id="bild" />
+                    <p>Result map</p>
                 </div>
             </div>
         </section>
