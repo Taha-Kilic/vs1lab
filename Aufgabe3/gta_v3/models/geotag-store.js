@@ -46,7 +46,7 @@ class InMemoryGeoTagStore{
         
     }
 
-    getNeaerbyGeoTags(geotag, radius) {
+    getNearbyGeoTags(geotag, radius) {
         return this.#geoTagMultiSet.filter(
             tag => geotag.getDistanceFrom(tag) <= radius
         );
