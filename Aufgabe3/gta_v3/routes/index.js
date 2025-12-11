@@ -61,6 +61,22 @@ router.get('/', (req, res) => {
  */
 
 // TODO: ... your code here ...
+router.post('/tagging', (req, res) => {
+    const name = req.body.name;
+    const hashtag = req.body.hashtag;
+    const latitude = parseFloat(req.body.latitude);
+    const longitude = parseFloat(req.body.longitude);
+    const radius = parseFloat(req.body.radius);
+
+    const newGeoTag = new GeoTag(name, hashtag, latitude, longitude);
+
+    const geoTagStore = new GeoTagStore();
+    geoTagStore.addGeoTag(newGeoTag);
+
+    const nearbyTags = geoTagStore.getNeaerbyGeoTags(newGeoTag, radius);
+
+    res.render('index', { taglist: nearbyTags });
+});
 
 /**
  * Route '/discovery' for HTTP 'POST' requests.
@@ -79,5 +95,22 @@ router.get('/', (req, res) => {
  */
 
 // TODO: ... your code here ...
+router.post('/discovery', (req, res) => {
+    const latitude = parseFloat(req.body.latitude);
+    const longitude = parseFloat(req.body.longitude);
+    const radius = parseFloat(req.body.radius);
+    const searchTerm = req.body.searchTerm || '';
+
+    const geoTagStore = new GeoTagStore();
+    const locationGeoTag = new GeoTag('', '', latitude, longitude);
+
+    let resultTags = geoTagStore.getNeaerbyGeoTags(locationGeoTag, radius);
+
+    if (searchTerm) {
+        resultTags = geoTagStore.searchNearbyGeoTags(searchTerm, radius);
+    }
+
+    res.render('index', { taglist: resultTags });
+});
 
 module.exports = router;

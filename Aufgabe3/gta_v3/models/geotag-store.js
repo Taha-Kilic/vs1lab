@@ -46,12 +46,17 @@ class InMemoryGeoTagStore{
         
     }
 
-    getNeaerbyGeoTags(geotag) {
-
+    getNeaerbyGeoTags(geotag, radius) {
+        return this.#geoTagMultiSet.filter(
+            tag => geotag.getDistanceFrom(tag) <= radius
+        );
     }
 
-    searchNearbyGeoTags(geotag) {
-
+    searchNearbyGeoTags(locName, radius) {
+        return this.#geoTagMultiSet.filter(
+            tag => (tag.name.includes(locName) || tag.hashtag.includes(locName)) &&
+                   (geotag.getDistanceFrom(tag) <= radius)
+        );
     }
 
 }
