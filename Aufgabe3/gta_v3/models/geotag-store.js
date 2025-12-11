@@ -27,6 +27,44 @@ class InMemoryGeoTagStore{
 
     // TODO: ... your code here ...
 
+    #geoTagMultiSet = []
+
+    constructor() {}
+
+    get geoTagMultiSet() {
+        return this.#geoTagMultiSet
+    }
+
+    addGeoTag(geotag) {
+        this.#geoTagMultiSet.push(geotag);
+    }
+
+    removeGeoTag(name) {
+        this.#geoTagMultiSet = this.#geoTagMultiSet.filter(
+            tag => tag.name !== name
+        );
+        
+    }
+
+    getNearbyGeoTags(locationGeotag, radius) {
+        return this.#geoTagMultiSet.filter(
+            tag => locationGeotag.getDistanceFrom(tag) <= radius
+        );
+    }
+
+    searchNearbyGeoTags(keyword, locationGeoTag, radius) {
+        return this.#geoTagMultiSet.filter(
+            tag => (
+                // 1. Keyword match: Check if the keyword is in the name or hashtag (case-sensitivity may need adjustment)
+                tag.name.includes(keyword) || 
+                tag.hashtag.includes(keyword)
+            ) && (
+                // 2. Proximity match: Check distance from the center location to the tag
+                locationGeoTag.getDistanceFrom(tag) <= radius
+            )
+        );
+    }
+
 }
 
 module.exports = InMemoryGeoTagStore
