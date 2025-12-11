@@ -44,10 +44,10 @@
                     <legend>Add a new GeoTag</legend><br>
 
                     <label for="tagLat" >Latitude: </label> <br>
-                    <input type="text" id="tagLat" name="latitude" value="49.01379" readonly/> <br>
+                    <input type="text" id="tagLat" name="latitude" value="<%= currentLatitude %>" readonly/> <br>
 
                     <label for="tagLong">Longitude: </label> <br>
-                    <input type="text" id="tagLong" name="longitude" value="8.404435" readonly/><br>
+                    <input type="text" id="tagLong" name="longitude" value="<%= currentLongitude %>" readonly/><br>
 
                     <label for="tagName">Name: </label> <br>
                     <input type="text" id="tagName" name="name" placeholder="e.g. Bester Döner" maxlength="10" required pattern="^[A-Za-z]{0,10}$"/> <br>
@@ -74,8 +74,8 @@
                     <legend>Search</legend>
                     <label for="search">Search term or keywords: </label><br>
                     <input type="search" id="searchterm" name="searchterm" placeholder="e.g. Karlsruhe" maxlength="10"> <br>
-                    <input type="hidden" id="tagLatHidden" value="49.01379">
-                    <input type="hidden" id="tagLongHidden" value="8.404435">
+                    <input type="hidden" id="tagLatHidden" name="latitude" value="<%= currentLatitude %>">
+                    <input type="hidden" id="tagLongHidden" name="longitude" value="<%= currentLongitude %>">
                     <button type="submit">Search</button>
                 </fieldset>
 
