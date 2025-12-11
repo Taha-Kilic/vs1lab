@@ -39,23 +39,29 @@ class InMemoryGeoTagStore{
         this.#geoTagMultiSet.push(geotag);
     }
 
-    removeGeoTag(removeGeotag) {
+    removeGeoTag(name) {
         this.#geoTagMultiSet = this.#geoTagMultiSet.filter(
-            tag => tag.name !== removeGeotag.name
+            tag => tag.name !== name
         );
         
     }
 
-    getNearbyGeoTags(geotag, radius) {
+    getNearbyGeoTags(locationGeotag, radius) {
         return this.#geoTagMultiSet.filter(
-            tag => geotag.getDistanceFrom(tag) <= radius
+            tag => locationGeotag.getDistanceFrom(tag) <= radius
         );
     }
 
-    searchNearbyGeoTags(locName, radius) {
+    searchNearbyGeoTags(keyword, locationGeoTag, radius) {
         return this.#geoTagMultiSet.filter(
-            tag => (tag.name.includes(locName) || tag.hashtag.includes(locName)) &&
-                   (geotag.getDistanceFrom(tag) <= radius)
+            tag => (
+                // 1. Keyword match: Check if the keyword is in the name or hashtag (case-sensitivity may need adjustment)
+                tag.name.includes(keyword) || 
+                tag.hashtag.includes(keyword)
+            ) && (
+                // 2. Proximity match: Check distance from the center location to the tag
+                locationGeoTag.getDistanceFrom(tag) <= radius
+            )
         );
     }
 
