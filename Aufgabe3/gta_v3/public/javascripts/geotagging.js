@@ -21,23 +21,37 @@ const mapManager = new MapManager();
 
 function updateLocation() {
         
-   const inputLat = document.getElementById("tagLat");
-    const inputLong = document.getElementById("tagLong");
+        const inputLat = document.getElementById("tagLat").value
+        const inputLong = document.getElementById("tagLong").value
 
-    if (inputLat==="" && inputLong==="") return;
-    
-        LocationHelper.findLocation((locationHelper) => {
-    
-        document.getElementById("tagLat").value = locationHelper.latitude
-        document.getElementById("tagLong").value = locationHelper.longitude
-
-        document.getElementById("tagLatHidden").value = locationHelper.latitude
-        document.getElementById("tagLongHidden").value = locationHelper.longitude
-
-        // Initialize the map
-        mapManager.initMap(locationHelper.latitude, locationHelper.longitude);
+    if (inputLat && inputLong) {
         
-        mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude);
+        if (inputLat.value=== "" && inputLong.value === "") { 
+            LocationHelper.findLocation((locationHelper) => {
+    
+            document.getElementById("tagLat").value = locationHelper.latitude
+            document.getElementById("tagLong").value = locationHelper.longitude
+
+            document.getElementById("tagLatHidden").value = locationHelper.latitude
+            document.getElementById("tagLongHidden").value = locationHelper.longitude
+
+            
+            initMapAndMarkers(locationHelper.latitude, locationHelper.longitude);
+            });
+        } 
+        else {
+                const serverLat = parseFloat(inputLat.value);
+                const serverLong = parseFloat(inputLong.value);
+                initMapAndMarkers(serverLat, serverLong);
+        }
+    }
+}
+
+    
+function initMapAndMarkers(lat, lon) {
+        mapManager.initMap(lat, lon);
+        
+        mapManager.updateMarkers(lat, lon);
         
         const placeholderImg = document.getElementById("bild");
         if (placeholderImg) placeholderImg.remove();
@@ -46,10 +60,7 @@ function updateLocation() {
         if (mapSpan) mapSpan.remove();
 
         document.getElementById("map").style.height = "500px";
-        });
-    
 }
-    
     
 
 
