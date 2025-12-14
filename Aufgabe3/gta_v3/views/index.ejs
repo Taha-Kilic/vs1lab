@@ -91,7 +91,7 @@
                     </ul>
                 </div>
 
-                <div id="map" class="discovery__map col-8">
+                <div id="map" class="discovery__map col-8" data-tags='<%= JSON.stringify(taglist || []) %>'>
                     <img src="./images/mapview.jpg" alt="a map with locations" id="bild" />
                     <p>Result map</p>
                 </div>
@@ -106,6 +106,8 @@
     <!-- Load JavaScripts
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./javascripts/map-manager.js"></script>
+    <script src="./javascripts/location-helper.js"></script>
     <script src="./javascripts/geotagging.js"></script>
 </body>
 
