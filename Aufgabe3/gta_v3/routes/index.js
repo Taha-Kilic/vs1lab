@@ -30,7 +30,7 @@ const GeoTag = require('../models/geotag');
  */
 // eslint-disable-next-line no-unused-vars
 const GeoTagStore = require('../models/geotag-store');
-const geotagStore = new GeoTagStore();
+const geoTagStore = new GeoTagStore();
 
 /**
  * Route '/' for HTTP 'GET' requests.
@@ -110,10 +110,10 @@ router.post('/discovery', (req, res) => {
 
     if (searchTerm) {
         
-        resultTags = geotagStore.searchNearbyGeoTags(searchTerm, locationGeoTag, radius);
+        resultTags = geoTagStore.searchNearbyGeoTags(searchTerm, locationGeoTag, radius);
     } else {
         
-        resultTags = geotagStore.getNearbyGeoTags(locationGeoTag, radius);
+        resultTags = geoTagStore.getNearbyGeoTags(locationGeoTag, radius);
     }
 
     res.render('index', { taglist: resultTags, 

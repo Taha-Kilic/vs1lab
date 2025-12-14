@@ -48,20 +48,20 @@ class InMemoryGeoTagStore{
 
     getNearbyGeoTags(locationGeotag, radius) {
         return this.#geoTagMultiSet.filter(
-            tag => locationGeotag.getDistanceFrom(tag) <= radius
+            tag => tag.latitude <= locationGeotag.latitude + radius &&
+                   tag.latitude >= locationGeotag.latitude - radius &&
+                   tag.longitude <= locationGeotag.longitude + radius &&
+                   tag.longitude >= locationGeotag.longitude - radius
         );
     }
 
-    searchNearbyGeoTags(keyword, locationGeoTag, radius) {
+    searchNearbyGeoTags(name, locationGeoTag, radius) {
         return this.#geoTagMultiSet.filter(
-            tag => (
-                // 1. Keyword match: Check if the keyword is in the name or hashtag (case-sensitivity may need adjustment)
-                tag.name.includes(keyword) || 
-                tag.hashtag.includes(keyword)
-            ) && (
-                // 2. Proximity match: Check distance from the center location to the tag
-                locationGeoTag.getDistanceFrom(tag) <= radius
-            )
+            tag => (tag.latitude <= locationGeoTag.latitude + radius &&
+                    tag.latitude >= locationGeoTag.latitude - radius &&
+                    tag.longitude <= locationGeoTag.longitude + radius &&
+                    tag.longitude >= locationGeoTag.longitude - radius) &&
+                   (tag.name.includes(name) || tag.hash.includes(name))
         );
     }
 
