@@ -21,37 +21,38 @@ const mapManager = new MapManager();
 
 function updateLocation() {
         
-        const inputLat = document.getElementById("tagLat").value
-        const inputLong = document.getElementById("tagLong").value
+   const inputLat = document.getElementById("tagLat");
+    const inputLong = document.getElementById("tagLong");
 
-    if (inputLat && inputLong) {
+    if (inputLat.value !== "" && inputLong.value !== "") {
         
-        if (inputLat.value=== "" && inputLong.value === "") { 
-            LocationHelper.findLocation((locationHelper) => {
-    
-            document.getElementById("tagLat").value = locationHelper.latitude
-            document.getElementById("tagLong").value = locationHelper.longitude
+        const lat = parseFloat(inputLat.value);
+        const long = parseFloat(inputLong.value);
 
-            document.getElementById("tagLatHidden").value = locationHelper.latitude
-            document.getElementById("tagLongHidden").value = locationHelper.longitude
+        mapManager.initMap(lat, long);
+        mapManager.updateMarkers(lat, long);
 
-            
-            initMapAndMarkers(locationHelper.latitude, locationHelper.longitude);
-            });
-        } 
-        else {
-                const serverLat = parseFloat(inputLat.value);
-                const serverLong = parseFloat(inputLong.value);
-                initMapAndMarkers(serverLat, serverLong);
-        }
+         const placeholderImg = document.getElementById("bild");
+        if (placeholderImg) placeholderImg.remove();
+
+        const mapSpan = document.querySelector("#map p");
+        if (mapSpan) mapSpan.remove();
+
+        document.getElementById("map").style.height = "500px";      
+        return;
     }
-}
-
-    
-function initMapAndMarkers(lat, lon) {
-        mapManager.initMap(lat, lon);
         
-        mapManager.updateMarkers(lat, lon);
+    
+        LocationHelper.findLocation((locationHelper) => {
+
+        document.getElementById("tagLat").value = locationHelper.latitude
+        document.getElementById("tagLong").value = locationHelper.longitude
+        document.getElementById("tagLatHidden").value = locationHelper.latitude
+        document.getElementById("tagLongHidden").value = locationHelper.longitude
+
+        // Initialize the map
+        mapManager.initMap(locationHelper.latitude, locationHelper.longitude);
+        mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude);
         
         const placeholderImg = document.getElementById("bild");
         if (placeholderImg) placeholderImg.remove();
@@ -60,7 +61,10 @@ function initMapAndMarkers(lat, lon) {
         if (mapSpan) mapSpan.remove();
 
         document.getElementById("map").style.height = "500px";
+        });
+    
 }
+           
     
 
 
