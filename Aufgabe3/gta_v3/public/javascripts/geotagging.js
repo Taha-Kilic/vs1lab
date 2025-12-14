@@ -45,6 +45,8 @@ function updateLocation() {
     
         LocationHelper.findLocation((locationHelper) => {
 
+        document.getElementById("tagLat").value = locationHelper.latitude
+        document.getElementById("tagLong").value = locationHelper.longitude
         document.getElementById("tagLatHidden").value = locationHelper.latitude
         document.getElementById("tagLongHidden").value = locationHelper.longitude
 
