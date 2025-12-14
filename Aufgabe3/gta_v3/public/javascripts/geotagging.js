@@ -21,8 +21,8 @@ const mapManager = new MapManager();
 
 function updateLocation() {
     const mapElement = document.getElementById("map");
-    const tagData = mapElement.dataset.tags;
-    const geoTags = tagData ? JSON.parse(tagData) : [];
+    const tagData = mapElement.getAttribute("data-tags");
+    const geoTags = JSON.parse(tagData);
     const inputLat = document.getElementById("tagLat");
     const inputLong = document.getElementById("tagLong");
 
