@@ -67,9 +67,9 @@ router.post('/tagging', (req, res) => {
     const hashtag = req.body.hashtag;
     const latitude = parseFloat(req.body.latitude);
     const longitude = parseFloat(req.body.longitude);
-    const radius = parseFloat(req.body.radius);
+    const radius = parseFloat(req.body.radius) || 100;
 
-    const newGeoTag = new GeoTag(name, hashtag, latitude, longitude);
+    const newGeoTag = new GeoTag(name, latitude, longitude, hashtag);
 
     geoTagStore.addGeoTag(newGeoTag);
 
@@ -104,7 +104,7 @@ router.post('/discovery', (req, res) => {
     const radius = parseFloat(req.body.radius) || 100;
     const searchTerm = req.body.searchTerm || '';
 
-    const locationGeoTag = new GeoTag('', '', latitude, longitude);
+    const locationGeoTag = new GeoTag('', latitude, longitude, '');
 
     let resultTags;
 
