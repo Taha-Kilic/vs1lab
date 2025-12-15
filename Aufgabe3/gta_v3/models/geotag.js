@@ -33,11 +33,11 @@ class GeoTag {
         this.#name = name;
     }
 
-    get hash(){
+    get hashtag(){
         return this.#hashtag;
     }
 
-    set hash(hash) {
+    set hashtag(hashtag) {
         this.#hashtag = hashtag;
     }
 
@@ -46,7 +46,7 @@ class GeoTag {
     }
 
     set longitude(longitude) {
-        this.#longitude = longitude
+        this.#longitude = longitude;
     }
 
     get latitude() {

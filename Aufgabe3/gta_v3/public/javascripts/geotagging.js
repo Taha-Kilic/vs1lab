@@ -31,7 +31,7 @@ function updateLocation() {
         
         const lat = parseFloat(inputLat.value);
         const long = parseFloat(inputLong.value);
-
+            
         mapManager.initMap(lat, long);
         mapManager.updateMarkers(lat, long, geoTags);
 
