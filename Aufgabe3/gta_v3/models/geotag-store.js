@@ -41,12 +41,12 @@ class InMemoryGeoTagStore{
         
         const exampleData = GeoTagExamples.tagList;
         exampleData.forEach(tagArray => {
-            const name = tagArray[2];
-            const latitude = tagArray[0];
-            const longitude = tagArray[1];
+            const name = tagArray[0];
+            const latitude = tagArray[1];
+            const longitude = tagArray[2];
             const hashtag = tagArray[3];
 
-            const newGeoTag = new GeoTag(latitude, longitude, name,hashtag);
+            const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
             
             this.#geoTagMultiSet.push(newGeoTag);
         });

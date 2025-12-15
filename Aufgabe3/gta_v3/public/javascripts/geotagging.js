@@ -32,7 +32,7 @@ function updateLocation() {
         const lat = parseFloat(inputLat.value);
         const long = parseFloat(inputLong.value);
             
-        mapManager.initMap(lat, long);
+        mapManager.initMap(geoTags[0].latitude, geoTags[0].longitude);
         mapManager.updateMarkers(lat, long, geoTags);
 
          const placeholderImg = document.getElementById("bild");

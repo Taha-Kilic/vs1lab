@@ -70,7 +70,7 @@ router.post('/tagging', (req, res) => {
     const longitude = parseFloat(req.body.longitude);
     const radius = parseFloat(req.body.radius) || 100;
 
-    const newGeoTag = new GeoTag(latitude, longitude, name,hashtag);
+    const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
 
     geoTagStore.addGeoTag(newGeoTag);
 
