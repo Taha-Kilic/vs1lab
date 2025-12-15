@@ -20,17 +20,20 @@ console.log("The geoTagging script is going to start...");
 const mapManager = new MapManager();
 
 function updateLocation() {
-        
-   const inputLat = document.getElementById("tagLat");
+    const mapElement = document.getElementById("map");
+    const taglist_json = mapElement.getAttribute("data-tags");
+    const geoTags = JSON.parse(taglist_json);
+
+    const inputLat = document.getElementById("tagLat");
     const inputLong = document.getElementById("tagLong");
 
     if (inputLat.value !== "" && inputLong.value !== "") {
         
         const lat = parseFloat(inputLat.value);
         const long = parseFloat(inputLong.value);
-
-        mapManager.initMap(lat, long);
-        mapManager.updateMarkers(lat, long);
+            
+        mapManager.initMap(geoTags[0].latitude, geoTags[0].longitude);
+        mapManager.updateMarkers(lat, long, geoTags);
 
          const placeholderImg = document.getElementById("bild");
         if (placeholderImg) placeholderImg.remove();
@@ -52,7 +55,7 @@ function updateLocation() {
 
         // Initialize the map
         mapManager.initMap(locationHelper.latitude, locationHelper.longitude);
-        mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude);
+        mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude, geoTags);
         
         const placeholderImg = document.getElementById("bild");
         if (placeholderImg) placeholderImg.remove();
