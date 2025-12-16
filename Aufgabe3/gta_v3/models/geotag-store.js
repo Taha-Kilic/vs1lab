@@ -67,33 +67,29 @@ class InMemoryGeoTagStore{
         
     }
 
-    getNearbyGeoTags(locationGeotag, radius) {
-        return this.#geoTagMultiSet.filter(
-            tag => tag.latitude <= locationGeotag.latitude + radius &&
-                   tag.latitude >= locationGeotag.latitude - radius &&
-                   tag.longitude <= locationGeotag.longitude + radius &&
-                   tag.longitude >= locationGeotag.longitude - radius
-        );
-    }
-
-    searchNearbyGeoTags(name, locationGeoTag, radius) {
-        // Keyword-Abgleich muss case-insensitive sein
-        const lowerCaseName = name.toLowerCase();
-
+    getNearbyGeoTags(locationGeoTag, radius) {
         return this.#geoTagMultiSet.filter(
             tag => (
-                    
+
                     tag.latitude <= locationGeoTag.latitude + radius &&
                     tag.latitude >= locationGeoTag.latitude - radius &&
                     tag.longitude <= locationGeoTag.longitude + radius &&
                     tag.longitude >= locationGeoTag.longitude - radius
-                   ) &&
-                   (
-                    
+                   ) 
+
+        );
+    }
+
+    searchNearbyGeoTags(name, locationGeoTag, radius) {
+        const lowerCaseName = name.toLowerCase();
+        return this.getNearbyGeoTags(locationGeoTag, radius).filter(
+            tag => 
+                (
                     tag.name.toLowerCase().includes(lowerCaseName) || 
                     tag.hashtag.toLowerCase().includes(lowerCaseName)
                    )
-        );
+        )
+
     }
 
 }
