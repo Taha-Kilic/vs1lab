@@ -65,13 +65,134 @@ function updateLocation() {
 
         document.getElementById("map").style.height = "500px";
         });
-    
 }
+       // --- A4: AJAX + REST ---
+    function renderDiscoveryList(tags) {
+    const ul = document.getElementById("discoveryResults");
+    ul.innerHTML = ""; // clear old items
+
+    if (!tags || tags.length === 0) return;
+
+tags.forEach(gtag => {
+    const li = document.createElement("li");
+    li.textContent = `${gtag.name} ( ${gtag.latitude},${gtag.longitude}) ${gtag.hashtag ?? ""}`;
+    ul.appendChild(li);
+});
+}
+
+function ensureMapVisible() {
+    const placeholderImg = document.getElementById("bild");
+    if (placeholderImg) placeholderImg.remove();
+
+    const mapSpan = document.querySelector("#map p");
+    if (mapSpan) mapSpan.remove();
+
+    document.getElementById("map").style.height = "500px";
+}
+
+function updateDiscoveryUI(centerLat, centerLng, tags) {
+    // update list
+    renderDiscoveryList(tags);
+
+    // update map data-tags (keep consistency with your existing updateLocation)
+    const mapElement = document.getElementById("map");
+    mapElement.setAttribute("data-tags", JSON.stringify(tags || []));
+
+    // update markers
+    ensureMapVisible();
+    mapManager.initMap(centerLat, centerLng);
+    mapManager.updateMarkers(centerLat, centerLng, tags || []);
+}
+
+async function handleTaggingSubmit(event) {
+    event.preventDefault();
+
+    const tagForm = document.getElementById("tag-form");
+
+    // keep HTML5 validation (A1)
+    if (!tagForm.reportValidity()) return;
+
+    const latitude = parseFloat(document.getElementById("tagLat").value);
+    const longitude = parseFloat(document.getElementById("tagLong").value);
+    const name = document.getElementById("tagName").value;
+    const hashtag = document.getElementById("tagHash").value;
+
+    const payload = { latitude, longitude, name, hashtag };
+
+    const response = await fetch("/api/geotags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        console.error("POST /api/geotags failed", response.status);
+        return;
+    }
+
+
+    const centerLat = parseFloat(document.getElementById("tagLatHidden").value);
+    const centerLng = parseFloat(document.getElementById("tagLongHidden").value);
+
+    const params = new URLSearchParams({
+        latitude: centerLat,
+        longitude: centerLng,
+        radius: "100",
+        searchTerm: "" 
+    });
+
+    const getResp = await fetch(`/api/geotags?${params.toString()}`);
+    const tags = getResp.ok ? await getResp.json() : [];
+
+
+    const searchInput = document.getElementById("searchterm");
+    if (searchInput) searchInput.value = "";
+
+    updateDiscoveryUI(centerLat, centerLng, tags);
+    }
+
+    async function handleDiscoverySubmit(event) {
+    event.preventDefault();
+
+    const discoveryForm = document.getElementById("discoveryFilterForm");
+
+
+    if (!discoveryForm.reportValidity()) return;
+
+    const searchTerm = document.getElementById("searchterm").value || "";
+
+    const centerLat = parseFloat(document.getElementById("tagLatHidden").value);
+    const centerLng = parseFloat(document.getElementById("tagLongHidden").value);
+
+    const params = new URLSearchParams({
+        latitude: centerLat,
+        longitude: centerLng,
+        radius: "100",
+        searchTerm
+    });
+
+    const response = await fetch(`/api/geotags?${params.toString()}`);
+    if (!response.ok) {
+        console.error("GET /api/geotags failed", response.status);
+        return;
+    }
+
+    const tags = await response.json();
+    updateDiscoveryUI(centerLat, centerLng, tags);
+    }
+
            
     
 
 
-// Wait for the page to fully load its DOM content, then call updateLocation
+
 document.addEventListener("DOMContentLoaded", () => {
     updateLocation();
+
+   
+    const tagForm = document.getElementById("tag-form");
+    const discoveryForm = document.getElementById("discoveryFilterForm");
+
+    if (tagForm) tagForm.addEventListener("submit", handleTaggingSubmit);
+    if (discoveryForm) discoveryForm.addEventListener("submit", handleDiscoverySubmit);
 });
