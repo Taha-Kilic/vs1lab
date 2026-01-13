@@ -140,25 +140,31 @@ router.post('/discovery', (req, res) => {
 // TODO: ... your code here ...
 
 router.get('/api/geotags', (req, res) => {
-    const latitude = parseFloat(req.query.latitude);
-    const longitude = parseFloat(req.query.longitude);
-    const radius = parseFloat(req.query.radius) || 100;
-    const searchTerm = req.query.searchTerm || '';
+  const latitude = parseFloat(req.query.latitude);
+  const longitude = parseFloat(req.query.longitude);
+  const radius = parseFloat(req.query.radius) || 100;
+  const searchTerm = req.query.searchTerm || '';
 
-    const locationGeoTag = new GeoTag(latitude, longitude,'', '');
+  const page = parseInt(req.query.page, 10) || 1;
+  const pageSize = parseInt(req.query.pageSize, 10) || 5;
 
-    let resultTags;
+  const locationGeoTag = new GeoTag(latitude, longitude, '', '');
 
-    if (searchTerm) {
-        
-        resultTags = geoTagStore.searchNearbyGeoTags(searchTerm, locationGeoTag, radius);
-    } else {
-        
-        resultTags = geoTagStore.getNearbyGeoTags(locationGeoTag, radius);
-    }
+  let resultTags;
+  if (searchTerm) {
+    resultTags = geoTagStore.searchNearbyGeoTags(searchTerm, locationGeoTag, radius);
+  } else {
+    resultTags = geoTagStore.getNearbyGeoTags(locationGeoTag, radius);
+  }
 
-    res.json(resultTags);
-    
+  const totalItems = resultTags.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  const safePage = Math.min(Math.max(page, 1), totalPages);
+  const start = (safePage - 1) * pageSize;
+  const items = resultTags.slice(start, start + pageSize);
+
+  res.json({ items, page: safePage, pageSize, totalItems, totalPages }); //json Seiten
 });
 
 

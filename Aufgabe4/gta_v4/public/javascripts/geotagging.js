@@ -19,6 +19,16 @@ console.log("The geoTagging script is going to start...");
 
 const mapManager = new MapManager();
 
+let currentPage = 1; //pagination
+const pageSize = 5;
+
+let lastQuery = {
+  latitude: null,
+  longitude: null,
+  radius: 100,
+  searchTerm: ""
+};
+
 function updateLocation() {
     const mapElement = document.getElementById("map");
     const taglist_json = mapElement.getAttribute("data-tags");
@@ -128,60 +138,92 @@ async function handleTaggingSubmit(event) {
     }
 
 
-    const centerLat = parseFloat(document.getElementById("tagLatHidden").value);
-    const centerLng = parseFloat(document.getElementById("tagLongHidden").value);
+    lastQuery = {
+  latitude: parseFloat(document.getElementById("tagLatHidden").value),
+  longitude: parseFloat(document.getElementById("tagLongHidden").value),
+  radius: 100,
+  searchTerm: ""
+};
 
-    const params = new URLSearchParams({
-        latitude: centerLat,
-        longitude: centerLng,
-        radius: "100",
-        searchTerm: "" 
-    });
+const searchInput = document.getElementById("searchterm");
+if (searchInput) searchInput.value = "";
 
-    const getResp = await fetch(`/api/geotags?${params.toString()}`);
-    const tags = getResp.ok ? await getResp.json() : [];
+await loadDiscoveryPage(1);
+}
+async function handleDiscoverySubmit(event) {
+  event.preventDefault();
 
+  const discoveryForm = document.getElementById("discoveryFilterForm");
+  if (!discoveryForm.reportValidity()) return;
 
-    const searchInput = document.getElementById("searchterm");
-    if (searchInput) searchInput.value = "";
+  const searchTerm = document.getElementById("searchterm").value || "";
+  const centerLat = parseFloat(document.getElementById("tagLatHidden").value);
+  const centerLng = parseFloat(document.getElementById("tagLongHidden").value);
 
-    updateDiscoveryUI(centerLat, centerLng, tags);
-    }
+  lastQuery = {
+    latitude: centerLat,
+    longitude: centerLng,
+    radius: 100,
+    searchTerm
+    };
 
-    async function handleDiscoverySubmit(event) {
-    event.preventDefault();
+  await loadDiscoveryPage(1);
+}
 
-    const discoveryForm = document.getElementById("discoveryFilterForm");
+function renderPagination(page, totalPages) {
+  const container = document.getElementById("pagination");
+  if (!container) return;
 
+  container.innerHTML = "";
 
-    if (!discoveryForm.reportValidity()) return;
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "<";
+  prevBtn.disabled = page <= 1;
+  prevBtn.addEventListener("click", () => {
+    if (page > 1) loadDiscoveryPage(page - 1);
+  });
 
-    const searchTerm = document.getElementById("searchterm").value || "";
+  const info = document.createElement("span");
+  info.textContent = ` ${page}/${totalPages} (${pageSize}) `;
 
-    const centerLat = parseFloat(document.getElementById("tagLatHidden").value);
-    const centerLng = parseFloat(document.getElementById("tagLongHidden").value);
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = ">";
+  nextBtn.disabled = page >= totalPages;
+  nextBtn.addEventListener("click", () => {
+    if (page < totalPages) loadDiscoveryPage(page + 1);
+  });
 
-    const params = new URLSearchParams({
-        latitude: centerLat,
-        longitude: centerLng,
-        radius: "100",
-        searchTerm
-    });
+  container.appendChild(prevBtn);
+  container.appendChild(info);
+  container.appendChild(nextBtn);
+}
 
-    const response = await fetch(`/api/geotags?${params.toString()}`);
-    if (!response.ok) {
-        console.error("GET /api/geotags failed", response.status);
-        return;
-    }
+async function loadDiscoveryPage(page) {
+  currentPage = page;
 
-    const tags = await response.json();
-    updateDiscoveryUI(centerLat, centerLng, tags);
-    }
+  const params = new URLSearchParams({
+    latitude: lastQuery.latitude,
+    longitude: lastQuery.longitude,
+    radius: String(lastQuery.radius),
+    searchTerm: lastQuery.searchTerm,
+    page: String(currentPage),
+    pageSize: String(pageSize)
+  });
+
+  const response = await fetch(`/api/geotags?${params.toString()}`);
+  if (!response.ok) {
+    console.error("GET /api/geotags failed", response.status);
+    return;
+  }
+
+  const data = await response.json(); // { items, page, totalPages... }
+
+  updateDiscoveryUI(lastQuery.latitude, lastQuery.longitude, data.items);
+  renderPagination(data.page, data.totalPages);
+}
 
            
     
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
     updateLocation();
