@@ -91,18 +91,15 @@ function ensureMapVisible() {
 }
 
 function updateDiscoveryUI(centerLat, centerLng, tags) {
-    // update list
-    renderDiscoveryList(tags);
+  renderDiscoveryList(tags);
 
-    // update map data-tags (keep consistency with your existing updateLocation)
-    const mapElement = document.getElementById("map");
-    mapElement.setAttribute("data-tags", JSON.stringify(tags || []));
+  const mapElement = document.getElementById("map");
+  mapElement.setAttribute("data-tags", JSON.stringify(tags || []));
 
-    // update markers
-    ensureMapVisible();
-    mapManager.initMap(centerLat, centerLng);
-    mapManager.updateMarkers(centerLat, centerLng, tags || []);
+  ensureMapVisible();
+  mapManager.updateMarkers(centerLat, centerLng, tags || []);
 }
+
 
 async function handleTaggingSubmit(event) {
     event.preventDefault();
