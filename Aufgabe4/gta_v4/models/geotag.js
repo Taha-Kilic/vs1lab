@@ -12,7 +12,7 @@
 class GeoTag {
 
     // TODO: ... your code here ...
-
+    id;
     latitude;
     longitude;
     name;

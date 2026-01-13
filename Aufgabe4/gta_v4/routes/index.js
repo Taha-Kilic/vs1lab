@@ -183,10 +183,10 @@ router.post('/api/geotags', (req, res) => {
     const longitude = parseFloat(req.body.longitude);
     
     const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
-    geoTagStore.addGeoTag(newGeoTag);
+    const created = geoTagStore.addGeoTag(newGeoTag);
 
-    res.location(`/api/geotags/${newGeoTag.id}`);
-    res.status(201).json(newGeoTag);
+    res.location(`/api/geotags/${created.id}`);
+    res.status(201).json(created);
 });
 
 /**
