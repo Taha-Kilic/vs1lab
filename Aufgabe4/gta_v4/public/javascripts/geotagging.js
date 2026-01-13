@@ -19,6 +19,16 @@ console.log("The geoTagging script is going to start...");
 
 const mapManager = new MapManager();
 
+let currentPage = 1; //pagination
+const pageSize = 5;
+
+let lastQuery = {
+  latitude: null,
+  longitude: null,
+  radius: 100,
+  searchTerm: ""
+};
+
 function updateLocation() {
     const mapElement = document.getElementById("map");
     const taglist_json = mapElement.getAttribute("data-tags");
@@ -65,13 +75,163 @@ function updateLocation() {
 
         document.getElementById("map").style.height = "500px";
         });
-    
 }
+       // --- A4: AJAX + REST ---
+    function renderDiscoveryList(tags) {
+    const ul = document.getElementById("discoveryResults");
+    ul.innerHTML = ""; // clear old items
+
+    if (!tags || tags.length === 0) return;
+
+tags.forEach(gtag => {
+    const li = document.createElement("li");
+    li.textContent = `${gtag.name} ( ${gtag.latitude},${gtag.longitude}) ${gtag.hashtag ?? ""}`;
+    ul.appendChild(li);
+});
+}
+
+function ensureMapVisible() {
+    const placeholderImg = document.getElementById("bild");
+    if (placeholderImg) placeholderImg.remove();
+
+    const mapSpan = document.querySelector("#map p");
+    if (mapSpan) mapSpan.remove();
+
+    document.getElementById("map").style.height = "500px";
+}
+
+function updateDiscoveryUI(centerLat, centerLng, tags) {
+  renderDiscoveryList(tags);
+
+  const mapElement = document.getElementById("map");
+  mapElement.setAttribute("data-tags", JSON.stringify(tags || []));
+
+  ensureMapVisible();
+  mapManager.updateMarkers(centerLat, centerLng, tags || []);
+}
+
+
+async function handleTaggingSubmit(event) {
+    event.preventDefault();
+
+    const tagForm = document.getElementById("tag-form");
+
+    // keep HTML5 validation (A1)
+    if (!tagForm.reportValidity()) return;
+
+    const latitude = parseFloat(document.getElementById("tagLat").value);
+    const longitude = parseFloat(document.getElementById("tagLong").value);
+    const name = document.getElementById("tagName").value;
+    const hashtag = document.getElementById("tagHash").value;
+
+    const payload = { latitude, longitude, name, hashtag };
+
+    const response = await fetch("/api/geotags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        console.error("POST /api/geotags failed", response.status);
+        return;
+    }
+
+
+    lastQuery = {
+  latitude: parseFloat(document.getElementById("tagLatHidden").value),
+  longitude: parseFloat(document.getElementById("tagLongHidden").value),
+  radius: 100,
+  searchTerm: ""
+};
+
+const searchInput = document.getElementById("searchterm");
+if (searchInput) searchInput.value = "";
+
+await loadDiscoveryPage(1);
+}
+async function handleDiscoverySubmit(event) {
+  event.preventDefault();
+
+  const discoveryForm = document.getElementById("discoveryFilterForm");
+  if (!discoveryForm.reportValidity()) return;
+
+  const searchTerm = document.getElementById("searchterm").value || "";
+  const centerLat = parseFloat(document.getElementById("tagLatHidden").value);
+  const centerLng = parseFloat(document.getElementById("tagLongHidden").value);
+
+  lastQuery = {
+    latitude: centerLat,
+    longitude: centerLng,
+    radius: 100,
+    searchTerm
+    };
+
+  await loadDiscoveryPage(1);
+}
+
+function renderPagination(page, totalPages) {
+  const container = document.getElementById("pagination");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "<";
+  prevBtn.disabled = page <= 1;
+  prevBtn.addEventListener("click", () => {
+    if (page > 1) loadDiscoveryPage(page - 1);
+  });
+
+  const info = document.createElement("span");
+  info.textContent = ` ${page}/${totalPages} (${pageSize}) `;
+
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = ">";
+  nextBtn.disabled = page >= totalPages;
+  nextBtn.addEventListener("click", () => {
+    if (page < totalPages) loadDiscoveryPage(page + 1);
+  });
+
+  container.appendChild(prevBtn);
+  container.appendChild(info);
+  container.appendChild(nextBtn);
+}
+
+async function loadDiscoveryPage(page) {
+  currentPage = page;
+
+  const params = new URLSearchParams({
+    latitude: lastQuery.latitude,
+    longitude: lastQuery.longitude,
+    radius: String(lastQuery.radius),
+    searchTerm: lastQuery.searchTerm,
+    page: String(currentPage),
+    pageSize: String(pageSize)
+  });
+
+  const response = await fetch(`/api/geotags?${params.toString()}`);
+  if (!response.ok) {
+    console.error("GET /api/geotags failed", response.status);
+    return;
+  }
+
+  const data = await response.json(); // { items, page, totalPages... }
+
+  updateDiscoveryUI(lastQuery.latitude, lastQuery.longitude, data.items);
+  renderPagination(data.page, data.totalPages);
+}
+
            
     
 
-
-// Wait for the page to fully load its DOM content, then call updateLocation
 document.addEventListener("DOMContentLoaded", () => {
     updateLocation();
+
+   
+    const tagForm = document.getElementById("tag-form");
+    const discoveryForm = document.getElementById("discoveryFilterForm");
+
+    if (tagForm) tagForm.addEventListener("submit", handleTaggingSubmit);
+    if (discoveryForm) discoveryForm.addEventListener("submit", handleDiscoverySubmit);
 });
