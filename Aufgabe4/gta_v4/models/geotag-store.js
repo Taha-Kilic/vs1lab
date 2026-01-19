@@ -50,8 +50,6 @@ class InMemoryGeoTagStore{
             const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
             newGeoTag.id = String(this.#nextId++);
             this.#geoTagMultiSet.push(newGeoTag);
-            
-            this.#geoTagMultiSet.push(newGeoTag);
         });
     }
 

@@ -170,7 +170,7 @@ async function handleDiscoverySubmit(event) {
   await loadDiscoveryPage(1);
 }
 
-function renderPagination(page, totalPages) {
+function renderPagination(currentPageNum, totalPages) {
   const container = document.getElementById("pagination");
   if (!container) return;
 
@@ -178,19 +178,19 @@ function renderPagination(page, totalPages) {
 
   const prevBtn = document.createElement("button");
   prevBtn.textContent = "<";
-  prevBtn.disabled = page <= 1;
+  prevBtn.disabled = currentPageNum <= 1;
   prevBtn.addEventListener("click", () => {
-    if (page > 1) loadDiscoveryPage(page - 1);
+    loadDiscoveryPage(currentPageNum - 1);
   });
 
   const info = document.createElement("span");
-  info.textContent = ` ${page}/${totalPages} (${pageSize}) `;
+  info.textContent = ` ${currentPageNum}/${totalPages} (${pageSize}) `;
 
   const nextBtn = document.createElement("button");
   nextBtn.textContent = ">";
-  nextBtn.disabled = page >= totalPages;
+  nextBtn.disabled = currentPageNum >= totalPages;
   nextBtn.addEventListener("click", () => {
-    if (page < totalPages) loadDiscoveryPage(page + 1);
+    loadDiscoveryPage(currentPageNum + 1);
   });
 
   container.appendChild(prevBtn);
@@ -206,7 +206,7 @@ async function loadDiscoveryPage(page) {
     longitude: lastQuery.longitude,
     radius: String(lastQuery.radius),
     searchTerm: lastQuery.searchTerm,
-    page: String(currentPage),
+    page: String(page),
     pageSize: String(pageSize)
   });
 
@@ -216,13 +216,14 @@ async function loadDiscoveryPage(page) {
     return;
   }
 
-  const data = await response.json(); // { items, page, totalPages... }
+  const data = await response.json();
 
+  mapManager.initMap(lastQuery.latitude, lastQuery.longitude);
   updateDiscoveryUI(lastQuery.latitude, lastQuery.longitude, data.items);
-  renderPagination(data.page, data.totalPages);
+  
+  renderPagination(page, data.totalPages);
 }
 
-           
     
 
 document.addEventListener("DOMContentLoaded", () => {
