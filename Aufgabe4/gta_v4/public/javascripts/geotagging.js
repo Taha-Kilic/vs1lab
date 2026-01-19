@@ -29,34 +29,31 @@ let lastQuery = {
   searchTerm: ""
 };
 
-function updateLocation() {
-    const mapElement = document.getElementById("map");
-    const taglist_json = mapElement.getAttribute("data-tags");
-    const geoTags = JSON.parse(taglist_json);
-
+async function updateLocation() {
     const inputLat = document.getElementById("tagLat");
     const inputLong = document.getElementById("tagLong");
 
     if (inputLat.value !== "" && inputLong.value !== "") {
-        
         const lat = parseFloat(inputLat.value);
         const long = parseFloat(inputLong.value);
-            
-        mapManager.initMap(geoTags[0].latitude, geoTags[0].longitude);
-        mapManager.updateMarkers(lat, long, geoTags);
 
-         const placeholderImg = document.getElementById("bild");
-        if (placeholderImg) placeholderImg.remove();
+        mapManager.initMap(lat, long);
+        mapManager.updateMarkers(lat, long, []);
+        ensureMapVisible();
 
-        const mapSpan = document.querySelector("#map p");
-        if (mapSpan) mapSpan.remove();
+        lastQuery = {
+          latitude: lat,
+          longitude: long,
+          radius: 100,
+          searchTerm: ""
+        };
 
-        document.getElementById("map").style.height = "500px";      
+        await loadDiscoveryPage(1, false);
         return;
     }
         
     
-        LocationHelper.findLocation((locationHelper) => {
+        LocationHelper.findLocation(async (locationHelper) => {
 
         document.getElementById("tagLat").value = locationHelper.latitude
         document.getElementById("tagLong").value = locationHelper.longitude
@@ -65,15 +62,17 @@ function updateLocation() {
 
         // Initialize the map
         mapManager.initMap(locationHelper.latitude, locationHelper.longitude);
-        mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude, geoTags);
-        
-        const placeholderImg = document.getElementById("bild");
-        if (placeholderImg) placeholderImg.remove();
+        mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude, []);
+        ensureMapVisible();
 
-        const mapSpan = document.querySelector("#map p");
-        if (mapSpan) mapSpan.remove();
+        lastQuery = {
+          latitude: locationHelper.latitude,
+          longitude: locationHelper.longitude,
+          radius: 100,
+          searchTerm: ""
+        };
 
-        document.getElementById("map").style.height = "500px";
+        await loadDiscoveryPage(1, false);
         });
 }
        // --- A4: AJAX + REST ---
@@ -98,15 +97,25 @@ function ensureMapVisible() {
     if (mapSpan) mapSpan.remove();
 
     document.getElementById("map").style.height = "500px";
+    mapManager.refreshMap();
 }
 
-function updateDiscoveryUI(centerLat, centerLng, tags) {
+function getDiscoveryCenter(fallbackLat, fallbackLng, tags) {
+  if (tags && tags.length > 0) {
+    return { latitude: tags[0].latitude, longitude: tags[0].longitude };
+  }
+  return { latitude: fallbackLat, longitude: fallbackLng };
+}
+
+function updateDiscoveryUI(centerLat, centerLng, tags, centerOnFirstTag = true) {
   renderDiscoveryList(tags);
 
   const mapElement = document.getElementById("map");
   mapElement.setAttribute("data-tags", JSON.stringify(tags || []));
 
   ensureMapVisible();
+  const target = centerOnFirstTag ? getDiscoveryCenter(centerLat, centerLng, tags) : { latitude: centerLat, longitude: centerLng };
+  mapManager.initMap(target.latitude, target.longitude);
   mapManager.updateMarkers(centerLat, centerLng, tags || []);
 }
 
@@ -198,7 +207,7 @@ function renderPagination(page, totalPages) {
   container.appendChild(nextBtn);
 }
 
-async function loadDiscoveryPage(page) {
+async function loadDiscoveryPage(page, centerOnFirstTag = true) {
   currentPage = page;
 
   const params = new URLSearchParams({
@@ -218,7 +227,7 @@ async function loadDiscoveryPage(page) {
 
   const data = await response.json(); // { items, page, totalPages... }
 
-  updateDiscoveryUI(lastQuery.latitude, lastQuery.longitude, data.items);
+  updateDiscoveryUI(lastQuery.latitude, lastQuery.longitude, data.items, centerOnFirstTag);
   renderPagination(data.page, data.totalPages);
 }
 
