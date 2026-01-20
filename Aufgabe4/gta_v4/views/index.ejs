@@ -50,10 +50,10 @@
                     <input type="text" id="tagLong" name="longitude" value="<%= currentLongitude %>" readonly/><br>
 
                     <label for="tagName">Name: </label> <br>
-                    <input type="text" id="tagName" name="name" placeholder="e.g. Bester Döner" maxlength="10" required pattern="^[A-Za-z]{0,10}$"/> <br>
+                    <input type="text" id="tagName" name="name" placeholder="e.g. Bester Döner" maxlength="20" required pattern="^[A-Za-zÄÖÜäöüß ]{0,20}$"/> <br>
 
                     <label for="atagHash">Hashtag: </label> <br>
-                    <input type="text" id="tagHash" name="hashtag" placeholder="e.g. #Döner" pattern="^#[A-Za-z]{0,10}$"/> <br>
+                    <input type="text" id="tagHash" name="hashtag" placeholder="e.g. #Döner" pattern="^#^[A-Za-zÄÖÜäöüß ]{0,20}$"/> <br>
             
                     <button type="submit">Add Tag</button><br>
             
