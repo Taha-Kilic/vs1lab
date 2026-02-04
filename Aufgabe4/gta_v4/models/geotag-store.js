@@ -36,7 +36,6 @@ class InMemoryGeoTagStore{
     
 
     #geoTagMultiSet = []
-    #nextId = 1;
 
     constructor() {
         
@@ -48,8 +47,6 @@ class InMemoryGeoTagStore{
             const hashtag = tagArray[3];
 
             const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
-            newGeoTag.id = String(this.#nextId++);
-            this.#geoTagMultiSet.push(newGeoTag);
             
             this.#geoTagMultiSet.push(newGeoTag);
         });
@@ -60,12 +57,8 @@ class InMemoryGeoTagStore{
     }
 
     addGeoTag(geotag) {
-    geotag.id = String(this.#nextId++);
-    this.#geoTagMultiSet.push(geotag);
-    return geotag;
-}
-
-
+        this.#geoTagMultiSet.push(geotag);
+    }
 
     removeGeoTag(name) {
         this.#geoTagMultiSet = this.#geoTagMultiSet.filter(
@@ -98,25 +91,7 @@ class InMemoryGeoTagStore{
         )
 
     }
-    getGeoTagById(id) {
-    const sid = String(id);
-    return this.#geoTagMultiSet.find(tag => String(tag.id) === sid) || null;
-    }
 
-    updateGeoTag(id, updatedGeoTag) {
-    const sid = String(id);
-    const index = this.#geoTagMultiSet.findIndex(tag => String(tag.id) === sid);
-    if (index === -1) return false;
-
-    updatedGeoTag.id = sid;
-    this.#geoTagMultiSet[index] = updatedGeoTag;
-    return true;
-    }
-
-    deleteGeoTag(id) {
-    const sid = String(id);
-    this.#geoTagMultiSet = this.#geoTagMultiSet.filter(tag => String(tag.id) !== sid);
-    }
 }
 
 module.exports = InMemoryGeoTagStore;
