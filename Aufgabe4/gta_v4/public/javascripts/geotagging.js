@@ -10,9 +10,7 @@
 console.log("The geoTagging script is going to start...");
 
 class GeoTag {
-
-    // TODO: ... your code here ...
-
+    
     latitude;
     longitude;
     name;
@@ -48,7 +46,6 @@ function updateLocation() {
     document.getElementById("tagLatHidden").value = locationHelper.latitude
     document.getElementById("tagLongHidden").value = locationHelper.longitude
 
-        // Initialize the map
     mapManager.initMap(locationHelper.latitude, locationHelper.longitude);
     mapManager.updateMarkers(locationHelper.latitude, locationHelper.longitude, geoTags);
         
@@ -64,7 +61,7 @@ function updateLocation() {
 }
            
 async function tagFormSubmitHandler(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault(); 
 
     const lat = parseFloat(document.getElementById("tagLat").value);
     const long = parseFloat(document.getElementById("tagLong").value);
@@ -85,10 +82,8 @@ async function tagFormSubmitHandler(event) {
         const createdGeoTag = await response.json();
         console.log('GeoTag created:', createdGeoTag);
         
-        // Clear the form
         document.getElementById("tag-form").reset();
         
-        // Fetch nearby tags and update the map and list
         const nearbyResponse = await fetch(`/api/geotags?latitude=${lat}&longitude=${long}`);
         if (nearbyResponse.ok) {
             const nearbyTags = await nearbyResponse.json();
@@ -118,8 +113,8 @@ async function discoveryFilterSubmitHandler(event) {
     if (response.ok) {
         const geoTags = await response.json();
         console.log('Search results:', geoTags);
-        // Optionally, you can update the map or UI here to reflect the search results
-            updateMapAndTagList(geoTags);
+        
+        updateMapAndTagList(geoTags);
     } else {
         console.error('Failed to search GeoTags:', response.statusText);
     }
@@ -128,7 +123,7 @@ async function discoveryFilterSubmitHandler(event) {
 }
 
 function updateMapAndTagList(geoTags) {
-    // Update the discovery results list
+    
     const resultsList = document.getElementById("discoveryResults");
     resultsList.innerHTML = '';
     
@@ -139,7 +134,7 @@ function updateMapAndTagList(geoTags) {
             resultsList.appendChild(li);
         });
         
-        // Focus on the first tag in the list
+        
         mapManager.updateMarkers(geoTags[0].latitude, geoTags[0].longitude, geoTags);
     } else {
         const li = document.createElement('li');
@@ -148,7 +143,7 @@ function updateMapAndTagList(geoTags) {
     }
 }
 
-// Wait for the page to fully load its DOM content, then call updateLocation
+
 document.addEventListener("DOMContentLoaded", () => {
     updateLocation();
 
