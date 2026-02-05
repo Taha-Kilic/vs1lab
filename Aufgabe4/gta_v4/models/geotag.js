@@ -27,4 +27,7 @@ class GeoTag {
 
 }
 
-module.exports = GeoTag;
+// Support both Node.js (CommonJS) and Browser (ES6)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = GeoTag;
+}
