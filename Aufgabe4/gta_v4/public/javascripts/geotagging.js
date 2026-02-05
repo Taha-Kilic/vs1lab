@@ -8,7 +8,33 @@
 // The console window must be opened explicitly in the browser.
 // Try to find this output in the browser...
 console.log("The geoTagging script is going to start...");
-import GeoTag from '../models/geotag.js';
+
+/**
+ * GeoTag class for client-side use
+ * Represents a geolocation tag with name, hashtag, and coordinates
+ */
+class GeoTag {
+    constructor(latitude, longitude, name, hashtag) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name;
+        this.hashtag = hashtag;
+    }
+
+    /**
+     * Get the full location string
+     */
+    getLocation() {
+        return `(${this.latitude}, ${this.longitude})`;
+    }
+
+    /**
+     * Get the full tag information as string
+     */
+    toString() {
+        return `${this.name} ${this.getLocation()} ${this.hashtag}`;
+    }
+}
 
 /**
  * TODO: 'updateLocation'
