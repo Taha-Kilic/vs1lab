@@ -36,6 +36,7 @@ class InMemoryGeoTagStore{
     
 
     #geoTagMultiSet = []
+    #id = 0;
 
     constructor() {
         
@@ -47,7 +48,7 @@ class InMemoryGeoTagStore{
             const hashtag = tagArray[3];
 
             const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
-            
+            newGeoTag.id = this.#id++;
             this.#geoTagMultiSet.push(newGeoTag);
         });
     }
@@ -57,13 +58,20 @@ class InMemoryGeoTagStore{
     }
 
     addGeoTag(geotag) {
+        geotag.id = this.#id++;
         this.#geoTagMultiSet.push(geotag);
     }
 
     removeGeoTag(name) {
+        
         this.#geoTagMultiSet = this.#geoTagMultiSet.filter(
             tag => tag.name !== name
-        );
+);
+        this.#id = 0;
+
+        for (const tag of this.#geoTagMultiSet) {
+            tag.id = this.#id++;
+        }
         
     }
 
