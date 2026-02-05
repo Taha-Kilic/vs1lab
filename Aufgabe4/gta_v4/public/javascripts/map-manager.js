@@ -30,6 +30,14 @@
     * @param {number} zoom The map zoom, defaults to 18
     */
     initMap(latitude, longitude, zoom = 18) {
+        if (this.#map) {
+            this.#map.setView([latitude, longitude], zoom);
+            if (!this.#markers) {
+                this.#markers = L.layerGroup().addTo(this.#map);
+            }
+            return;
+        }
+
         // set up dynamic Leaflet map
         this.#map = L.map('map').setView([latitude, longitude], zoom);
         var mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
@@ -56,5 +64,12 @@
                 .bindPopup(tag.name)
                 .addTo(this.#markers);  
         }
+    }
+
+    /**
+    * Refresh map size after container changes (e.g., height updates)
+    */
+    refreshMap() {
+        if (this.#map) this.#map.invalidateSize();
     }
 }
