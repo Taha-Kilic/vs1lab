@@ -137,35 +137,35 @@ router.post('/discovery', (req, res) => {
  * If 'latitude' and 'longitude' are available, it will be further filtered based on radius.
  */
 
-// TODO: ... your code here ...
-
 router.get('/api/geotags', (req, res) => {
-  const latitude = parseFloat(req.query.latitude);
-  const longitude = parseFloat(req.query.longitude);
-  const radius = parseFloat(req.query.radius) || 100;
-  const searchTerm = req.query.searchTerm || '';
+    const latitude = parseFloat(req.query.latitude);
+    const longitude = parseFloat(req.query.longitude);
+    const radius = parseFloat(req.query.radius) || 1.0;
+    const searchTerm = req.query.searchterm || '';
 
-  const page = parseInt(req.query.page, 10) || 1;
-  const pageSize = parseInt(req.query.pageSize, 10) || 5;
+    let resultTags;
 
-  const locationGeoTag = new GeoTag(latitude, longitude, '', '');
+    if (!isNaN(latitude) && !isNaN(longitude)) {
+        
+        if (searchTerm) {
+            resultTags = geoTagStore.searchNearbyGeoTags(searchTerm, new GeoTag(latitude, longitude, '', ''), radius);
+        } else {
+            resultTags = geoTagStore.getNearbyGeoTags(new GeoTag(latitude, longitude, '', ''), radius);
+        }
+    } else if (searchTerm) {
+        
+        resultTags = geoTagStore.geoTagMultiSet.filter(
+            tag => tag.name.toLowerCase().includes(searchTerm.toLowerCase()) || tag.hashtag.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    } else {
+        
+        resultTags = geoTagStore.geoTagMultiSet;
+    }
 
-  let resultTags;
-  if (searchTerm) {
-    resultTags = geoTagStore.searchNearbyGeoTags(searchTerm, locationGeoTag, radius);
-  } else {
-    resultTags = geoTagStore.getNearbyGeoTags(locationGeoTag, radius);
-  }
-
-  const totalItems = resultTags.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
-  const safePage = Math.min(Math.max(page, 1), totalPages);
-  const start = (safePage - 1) * pageSize;
-  const items = resultTags.slice(start, start + pageSize);
-
-  res.json({ items, page: safePage, pageSize, totalItems, totalPages }); //json Seiten
+    res.json(resultTags);
 });
+
+
 
 
 
@@ -187,13 +187,17 @@ router.post('/api/geotags', (req, res) => {
     const hashtag = req.body.hashtag;
     const latitude = parseFloat(req.body.latitude);
     const longitude = parseFloat(req.body.longitude);
-    
-    const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
-    const created = geoTagStore.addGeoTag(newGeoTag);
 
-    res.location(`/api/geotags/${created.id}`);
-    res.status(201).json(created);
+    if (!name || !hashtag || isNaN(latitude) || isNaN(longitude)) {
+        return res.status(400).json({ error: 'Invalid GeoTag data' });
+    }
+
+    const newGeoTag = new GeoTag(latitude, longitude, name, hashtag);
+    geoTagStore.addGeoTag(newGeoTag);
+
+    res.status(201).location(`/api/geotags/${newGeoTag.id}`).json(newGeoTag);
 });
+
 
 /**
  * Route '/api/geotags/:id' for HTTP 'GET' requests.
@@ -208,14 +212,14 @@ router.post('/api/geotags', (req, res) => {
 // TODO: ... your code here ...
 
 router.get('/api/geotags/:id', (req, res) => {
-    const tagId = req.params.id;
-    const geoTag = geoTagStore.getGeoTagById(tagId);
+    const id = parseInt(req.params.id);
 
-    if (geoTag) {
-        res.json(geoTag);
-    } else {
-        res.status(404).send({ error: 'GeoTag not found' });
+    const geoTag = geoTagStore.geoTagMultiSet.find(tag => tag.id === id);
+
+    if (!geoTag) {
+        return res.status(404).json({ error: 'GeoTag not found' });
     }
+    res.json(geoTag);
 });
 
 
@@ -236,22 +240,25 @@ router.get('/api/geotags/:id', (req, res) => {
 // TODO: ... your code here ...
 
 router.put('/api/geotags/:id', (req, res) => {
-    const tagId = req.params.id;
-    const name = req.body.name;
-    const hashtag = req.body.hashtag;
-    const latitude = parseFloat(req.body.latitude);
-    const longitude = parseFloat(req.body.longitude);
+    const id = parseInt(req.params.id);
+    const { name, hashtag, latitude, longitude } = req.body;
 
-    const updatedGeoTag = new GeoTag(latitude, longitude, name, hashtag);
-    updatedGeoTag.id = tagId;
-
-    const success = geoTagStore.updateGeoTag(tagId, updatedGeoTag);
-
-    if (success) {
-        res.json(updatedGeoTag);
-    } else {
-        res.status(404).send({ error: 'GeoTag not found' });
+    if (!name || !hashtag || isNaN(latitude) || isNaN(longitude)) {
+        return res.status(400).json({ error: 'Invalid GeoTag data' });
     }
+
+    const geoTag = geoTagStore.geoTagMultiSet.find(tag => tag.id === id);
+
+    if (!geoTag) {
+        return res.status(404).json({ error: 'GeoTag not found' });
+    }
+
+    geoTag.name = name;
+    geoTag.hashtag = hashtag;
+    geoTag.latitude = latitude;
+    geoTag.longitude = longitude;
+
+    res.json(geoTag);
 });
 
 
@@ -269,15 +276,17 @@ router.put('/api/geotags/:id', (req, res) => {
 // TODO: ... your code here ...
 
 router.delete('/api/geotags/:id', (req, res) => {
-    const tagId = req.params.id;
-    const deletedGeoTag = geoTagStore.getGeoTagById(tagId);
+    const id = parseInt(req.params.id);
 
-    if (deletedGeoTag) {
-        geoTagStore.deleteGeoTag(tagId);
-        res.json(deletedGeoTag);
-    } else {
-        res.status(404).send({ error: 'GeoTag not found' });
+    const geoTag = geoTagStore.geoTagMultiSet.find(tag => tag.id === id);
+
+    if (!geoTag) {
+        return res.status(404).json({ error: 'GeoTag not found' });
     }
+
+    geoTagStore.removeGeoTag(geoTag.name);
+
+    res.json(geoTag);
 });
 
 module.exports = router;

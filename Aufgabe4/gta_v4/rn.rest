@@ -1,0 +1,31 @@
+
+
+GET http://localhost:3000/api/geotags
+###
+GET http://localhost:3000/api/geotags?searchterm=campus
+###
+POST http://localhost:3000/api/geotags
+Content-Type: application/json
+
+{
+  "name": "NewTestTag",
+  "hashtag": "#Test",
+  "latitude": 0.000,
+  "longitude": 0.000
+}
+
+###
+
+PUT http://localhost:3000/api/geotags/0
+Content-Type: application/json
+
+{
+  "name": "TestUpdate",
+  "hashtag": "#Updated",
+  "latitude": 49.015,
+  "longitude": 8.391
+}
+
+###
+
+GET http://localhost:3000/api/geotags/0
